@@ -15,7 +15,7 @@ Safety hooks to block or require user approval for dangerous commands in Claude 
 ## Installation
 
 ```bash
-/plugin install safety-hooks@claude-plugins
+/plugin install safety-hooks@ccplugins
 ```
 
 ## Configuration

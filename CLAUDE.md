@@ -70,7 +70,7 @@ claude
 /plugin marketplace add .
 
 # Install a plugin
-/plugin install plugin-name@claude-plugins
+/plugin install plugin-name@ccplugins
 
 # Test commands
 /your-command

@@ -25,7 +25,7 @@
       "args": [
         "basic-memory",
         "mcp",
-        "--project=claude-plugins"
+        "--project=ccplugins"
       ],
       "env": {
         "BASIC_MEMORY_KEBAB_FILENAMES": "true"

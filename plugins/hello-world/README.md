@@ -7,7 +7,7 @@ A simple "Hello World" plugin for Claude Code that demonstrates the basic plugin
 Once this marketplace is added, install the plugin:
 
 ```
-/plugin install hello-world@claude-plugins
+/plugin install hello-world@ccplugins
 ```
 
 ## Usage

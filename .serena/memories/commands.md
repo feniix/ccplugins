@@ -32,7 +32,7 @@ pre-commit run --all-files
 # From repo root
 claude
 /plugin marketplace add .
-/plugin install safety-hooks@claude-plugins
+/plugin install safety-hooks@ccplugins
 ```
 
 ## Git Operations

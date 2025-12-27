@@ -11,7 +11,7 @@ To use this marketplace, add it to your Claude Code configuration:
 ```bash
 cd /path/to/your-project
 claude
-/plugin marketplace add /path/to/claude-plugins
+/plugin marketplace add /path/to/ccplugins
 ```
 
 ### From GitHub
@@ -19,7 +19,7 @@ claude
 Once published, add via:
 
 ```bash
-/plugin marketplace add your-username/claude-plugins
+/plugin marketplace add your-username/ccplugins
 ```
 
 ## Installing Plugins
@@ -27,13 +27,13 @@ Once published, add via:
 List available plugins:
 
 ```bash
-/plugin marketplace list claude-plugins
+/plugin marketplace list ccplugins
 ```
 
 Install a plugin:
 
 ```bash
-/plugin install plugin-name@claude-plugins
+/plugin install plugin-name@ccplugins
 ```
 
 ## Available Plugins
@@ -114,10 +114,10 @@ Add your plugin to `.claude-plugin/marketplace.json`:
 
 ```bash
 # Reload the marketplace
-/plugin marketplace reload claude-plugins
+/plugin marketplace reload ccplugins
 
 # Install your plugin
-/plugin install your-plugin@claude-plugins
+/plugin install your-plugin@ccplugins
 
 # Test the command
 /your-command
