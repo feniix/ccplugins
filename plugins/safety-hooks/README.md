@@ -165,6 +165,10 @@ bash tests/test_file_length.sh
 - `test_file_length.sh` - File length limit validation
 - `test_rm_block.sh` - RM command blocking
 
+## Credits
+
+This plugin was inspired by [safety-hooks](https://github.com/pchalasani/claude-code-tools/tree/main/plugins/safety-hooks) by [Prudhvi Chalasani](https://github.com/pchalasani).
+
 ## License
 
 MIT
