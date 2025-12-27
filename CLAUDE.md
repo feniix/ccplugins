@@ -4,85 +4,87 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This repository hosts Claude plugins - integrations that extend Claude's capabilities with custom tools, data sources, or domain-specific knowledge. Plugins are distributed and installed by Claude Code users.
+This is a Claude plugin marketplace - a catalog of plugins distributed through Claude Code's plugin system. Users add this marketplace to discover and install plugins.
 
-## Getting Started
+## Marketplace Architecture
 
-### Initial Setup
+This repository is not a traditional code project - it's a **manifest registry**. The core structure:
 
-Before starting work on plugins, initialize the development environment:
-
-```bash
-npm install
+```
+.claude-plugin/marketplace.json    # Marketplace manifest (required)
+plugins/                           # Plugin directories
+├── plugin-name-1/
+│   ├── .claude-plugin/plugin.json # Plugin manifest
+│   ├── commands/                   # Slash commands (.md files)
+│   ├── agents/                     # Subagent definitions
+│   ├── skills/                     # Agent skills (SKILL.md)
+│   └── README.md
+└── plugin-name-2/
 ```
 
-### Common Commands
+### Two-Level Manifest System
 
-**Development**
-- `npm run build` - Build all plugins
-- `npm run dev` - Run in development mode with watch
-- `npm test` - Run all tests
-- `npm run test -- path/to/test.ts` - Run a specific test
-- `npm run lint` - Lint all code
-- `npm run lint:fix` - Fix linting issues
+1. **Marketplace manifest** (`.claude-plugin/marketplace.json`):
+   - Lists all plugins in the marketplace
+   - Each entry has `name`, `description`, `version`, `source` path
+   - `source` is relative to marketplace root (e.g., `./plugins/hello-world`)
 
-**Plugin Distribution**
-- `npm run publish` - Publish plugins to registry
-- `npm run validate` - Validate plugin manifests and configurations
+2. **Plugin manifests** (each plugin's `.claude-plugin/plugin.json`):
+   - Defines individual plugin metadata
+   - Required field: `name` (kebab-case)
+   - Optional: `version`, `description`, `author`, `license`, `keywords`
 
-## Architecture Overview
+### Plugin Components
 
-### Plugin Structure
+- **Commands** (`commands/*.md`): Markdown files with YAML frontmatter. The `description` in frontmatter becomes the command help text. Filename (minus .md) becomes the slash command name.
+- **Agents** (`agents/*.md`): Specialized subagents Claude can invoke
+- **Skills** (`skills/*/SKILL.md`): Model-invoked capabilities
+- **Hooks** (`hooks/hooks.json`): Event-driven automation
+- **MCP Servers** (`.mcp.json`): External tool integrations
 
-Claude plugins follow a standardized structure to ensure compatibility with Claude Code. Each plugin should:
+## Adding a New Plugin
 
-1. **Have a manifest** (`plugin.json` or similar) that declares:
-   - Plugin name and version
-   - Available tools/capabilities
-   - Configuration schema
-   - Entry point
+```bash
+# 1. Create plugin directory
+mkdir -p plugins/new-plugin/.claude-plugin
 
-2. **Export implementation** - The actual plugin code that implements declared capabilities
+# 2. Create plugin manifest
+cat > plugins/new-plugin/.claude-plugin/plugin.json << 'EOF'
+{
+  "name": "new-plugin",
+  "version": "1.0.0",
+  "description": "Brief description"
+}
+EOF
 
-3. **Include documentation** - README explaining what the plugin does and how to use it
+# 3. Add to marketplace manifest
+# Edit .claude-plugin/marketplace.json, append to plugins array:
+# {"name": "new-plugin", "source": "./plugins/new-plugin", ...}
+```
 
-### Key Architectural Patterns
+## Testing Plugins Locally
 
-**Plugin Interface**: Plugins implement a standard interface to work with Claude Code's plugin system. Check existing plugins for the interface contract.
+```bash
+# Add the marketplace (from repo root)
+claude
+/plugin marketplace add .
 
-**Configuration Management**: Plugins accept user configuration through standardized schema. Configuration is validated against the manifest schema before runtime.
+# Install a plugin
+/plugin install plugin-name@claude-plugins
 
-**Error Handling**: Plugins should propagate errors clearly to Claude Code so users understand what went wrong and can fix configuration or usage issues.
+# Test commands
+/your-command
+```
 
-### Directory Organization
+No build process, npm install, or compilation is required. Plugins are interpreted directly from source files.
 
-Organize plugins in top-level directories by functionality or domain. Each plugin directory should be self-contained and independently distributable.
+## Important Constraints
 
-## Development Workflow
+- **All paths in manifests must be relative** and start with `./`
+- **Plugin names must be kebab-case** (lowercase, hyphens only)
+- **Commands are markdown files** - the content is a prompt that Claude executes
+- **No TypeScript/JavaScript compilation** - this is a declarative plugin system
 
-1. Create a new plugin directory with manifest and implementation
-2. Write tests for plugin functionality
-3. Run `npm test` to ensure all tests pass
-4. Run `npm run lint` and `npm run lint:fix` to maintain code quality
-5. Build with `npm run build` to validate the plugin
-6. Update documentation to reflect plugin capabilities
+## Documentation
 
-## Testing
-
-Tests should cover:
-- Plugin initialization and configuration validation
-- All exported tools/capabilities
-- Error scenarios and edge cases
-- Integration with Claude Code when applicable
-
-Run tests frequently during development - use `npm run test -- path/to/test.ts` for fast iteration on specific tests.
-
-## Build and Distribution
-
-Plugins are built into distributable artifacts. The build process:
-- Validates plugin manifests
-- Bundles plugin code and dependencies
-- Generates distribution artifacts
-- Validates output for compatibility
-
-Always run `npm run build` before considering a plugin ready for use.
+See `MARKETPLACE.md` for contributor guidelines and plugin creation instructions.

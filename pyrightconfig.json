@@ -1,0 +1,8 @@
+{
+  "include": ["plugins"],
+  "exclude": ["**/tests/**", "**/__pycache__/**"],
+  "stubPath": "",
+  "typeCheckingMode": "standard",
+  "reportMissingImports": "warning",
+  "reportMissingModuleSource": "warning"
+}

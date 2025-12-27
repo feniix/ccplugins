@@ -1,0 +1,55 @@
+{
+  "mcpServers": {
+    "exa": {
+      "command": "direnv",
+      "args": [
+        "exec",
+        "${PROJECT_ROOT}",
+        "bunx",
+        "-y",
+        "exa-mcp-server"
+      ]
+    },
+    "ref": {
+      "command": "direnv",
+      "args": [
+        "exec",
+        "${PROJECT_ROOT}",
+        "bunx",
+        "-y",
+        "ref-tools-mcp@latest"
+      ]
+    },
+    "basic-memory": {
+      "command": "uvx",
+      "args": [
+        "basic-memory",
+        "mcp",
+        "--project=claude-plugins"
+      ],
+      "env": {
+        "BASIC_MEMORY_KEBAB_FILENAMES": "true"
+      }
+    },
+    "serena": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--context",
+        "ide-assistant",
+        "--project",
+        "${PROJECT_ROOT}"
+      ]
+    },
+    "code-reasoning": {
+      "command": "bunx",
+      "args": [
+        "-y",
+        "@mettamatt/code-reasoning"
+      ]
+    }
+  }
+}

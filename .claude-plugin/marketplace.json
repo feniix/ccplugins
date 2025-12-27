@@ -1,0 +1,33 @@
+{
+  "name": "claude-plugins",
+  "owner": {
+    "name": "feniix"
+  },
+  "metadata": {
+    "description": "A collection of Claude Code plugins for extending functionality",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "hello-world",
+      "description": "A simple hello world command plugin demonstrating the basic structure",
+      "version": "1.0.0",
+      "source": "./plugins/hello-world",
+      "category": "examples",
+      "tags": ["starter", "example"],
+      "keywords": ["hello", "demo", "tutorial"]
+    },
+    {
+      "name": "safety-hooks",
+      "description": "Safety hooks to block or require user approval for dangerous commands (rm, git operations, .env access, file size limits)",
+      "version": "0.1.0",
+      "source": "./plugins/safety-hooks",
+      "category": "security",
+      "tags": ["safety", "hooks", "git", "security"],
+      "keywords": ["rm", "git", "env", "safety", "protection", "hooks"],
+      "author": {
+        "name": "Prasad Chalasani"
+      }
+    }
+  ]
+}

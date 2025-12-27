@@ -1,0 +1,34 @@
+# Safety Hooks Configuration
+# This file allows you to customize the behavior of safety-hooks without modifying source code.
+# All settings are optional - if omitted, default values will be used.
+
+# Enable or disable individual hooks
+enabled_hooks:
+  rm_block: true           # Block 'rm' commands
+  git_add_block: true      # Block dangerous git add patterns
+  git_checkout_block: true # Block dangerous git checkout patterns
+  git_commit_ask: true     # Ask before git commit
+  env_protection: true     # Protect .env files from access
+  file_length_limit: true  # Ask before creating very large files
+
+# File length limit settings
+file_length_limit:
+  max_lines: 10000         # Maximum lines before prompting (default: 10000)
+  # extensions: ["auto"]   # File extensions to check. Use "auto" for default list, or specify custom list
+
+# RM block settings
+rm_block:
+  trash_dir: "TRASH"       # Name of trash directory (default: "TRASH")
+  require_log: true        # Require logging trashed files (default: true)
+  log_file: "TRASH-FILES.md"  # Name of log file (default: "TRASH-FILES.md")
+
+# Git add block settings
+git_add_block:
+  allow_wildcards: false   # Allow wildcard patterns like *.py (default: false)
+  allow_dot_add: false     # Allow 'git add .' (default: false)
+  allow_all_flag: false    # Allow -A/--all flags (default: false)
+
+# Git checkout safety settings
+git_checkout:
+  force_protection: true   # Block -f/--force flags (default: true)
+  dot_protection: true     # Block 'git checkout .' (default: true)
