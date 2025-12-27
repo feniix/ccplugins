@@ -107,6 +107,34 @@ claude
 /plugin install safety-hooks@ccplugins
 ```
 
+### Version Bumping
+
+When releasing plugin updates, use the version bump script to update both manifests atomically:
+
+```bash
+# List available plugins and current versions
+python3 scripts/bump_version.py --list
+
+# Bump patch version (0.2.0 -> 0.2.1)
+python3 scripts/bump_version.py safety-hooks patch
+
+# Bump minor version (0.2.0 -> 0.3.0)
+python3 scripts/bump_version.py safety-hooks minor
+
+# Bump major version (0.2.0 -> 1.0.0)
+python3 scripts/bump_version.py safety-hooks major
+
+# Set specific version explicitly
+python3 scripts/bump_version.py safety-hooks 1.0.0
+
+# Preview changes without writing files
+python3 scripts/bump_version.py safety-hooks patch --dry-run
+```
+
+**Important**: The script updates two files that must stay in sync:
+- `.claude-plugin/marketplace.json` - marketplace manifest
+- `plugins/{name}/.claude-plugin/plugin.json` - plugin's own manifest
+
 ## Adding a New Plugin
 
 ```bash

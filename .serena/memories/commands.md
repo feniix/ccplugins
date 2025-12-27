@@ -1,6 +1,7 @@
 # Common Commands
 
 ## Safety Hooks Testing
+
 ```bash
 # Run all tests (53 tests total)
 cd plugins/safety-hooks && bash tests/run_all_tests.sh
@@ -16,6 +17,7 @@ bash tests/test_config.sh
 ```
 
 ## Linting & Formatting
+
 ```bash
 # Check code
 ruff check .
@@ -28,6 +30,7 @@ pre-commit run --all-files
 ```
 
 ## Plugin Testing (Local)
+
 ```bash
 # From repo root
 claude
@@ -36,6 +39,7 @@ claude
 ```
 
 ## Git Operations
+
 ```bash
 # Commit with pre-commit hooks
 git commit -m "message"  # Pre-commit runs automatically

@@ -1,5 +1,5 @@
 {
-  "include": ["plugins"],
+  "include": ["plugins", "scripts"],
   "exclude": ["**/tests/**", "**/__pycache__/**"],
   "stubPath": "",
   "typeCheckingMode": "standard",
