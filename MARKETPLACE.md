@@ -40,7 +40,6 @@ Install a plugin:
 
 | Plugin                                  | Description                                                    | Version |
 | --------------------------------------- | -------------------------------------------------------------- | ------- |
-| [hello-world](./plugins/hello-world/)   | A simple hello world command plugin                            | 1.0.0   |
 | [safety-hooks](./plugins/safety-hooks/) | Safety hooks for dangerous commands (rm, git, .env, file size) | 0.1.0   |
 
 ## Creating a New Plugin

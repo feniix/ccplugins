@@ -1,7 +1,7 @@
 # Project Purpose
 
 ## Overview
-This is a **Claude Plugin Marketplace** - a catalog of plugins distributed through Claude Code's plugin system. Users add this marketplace to discover and install plugins.
+This is a **Claude Plugin Marketplace** (ccplugins) - a catalog of plugins distributed through Claude Code's plugin system. Users add this marketplace to discover and install plugins.
 
 ## Architecture
 This is a **manifest registry**, not a traditional code project. The structure:
@@ -17,6 +17,7 @@ This is a **manifest registry**, not a traditional code project. The structure:
 ## Key Plugin: safety-hooks
 Blocks or requires approval for dangerous commands:
 - Blocks `rm` commands (redirects to TRASH directory)
+- **Auto-adds `TRASH/` and `TRASH-FILES.md` to repo root `.gitignore` on first use**
 - Protects `.env` files from read/write access
 - Git operation safeguards (git add wildcards, git commit approval, git checkout protection)
 - File size limits (asks approval when source files exceed 10,000 lines)

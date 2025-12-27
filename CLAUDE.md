@@ -4,48 +4,113 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This is a Claude plugin marketplace - a catalog of plugins distributed through Claude Code's plugin system. Users add this marketplace to discover and install plugins.
+This is a Claude plugin marketplace (ccplugins) - a manifest registry of plugins distributed through Claude Code's plugin system.
 
 ## Marketplace Architecture
 
-This repository is not a traditional code project - it's a **manifest registry**. The core structure:
-
-```
-.claude-plugin/marketplace.json    # Marketplace manifest (required)
-plugins/                           # Plugin directories
-├── plugin-name-1/
-│   ├── .claude-plugin/plugin.json # Plugin manifest
-│   ├── commands/                   # Slash commands (.md files)
-│   ├── agents/                     # Subagent definitions
-│   ├── skills/                     # Agent skills (SKILL.md)
-│   └── README.md
-└── plugin-name-2/
-```
+This is **not a traditional code project**. It's a declarative plugin system—no build process, npm install, or compilation required. Plugins are interpreted directly from source.
 
 ### Two-Level Manifest System
 
-1. **Marketplace manifest** (`.claude-plugin/marketplace.json`):
-   - Lists all plugins in the marketplace
-   - Each entry has `name`, `description`, `version`, `source` path
-   - `source` is relative to marketplace root (e.g., `./plugins/hello-world`)
+1. **Marketplace manifest** (`.claude-plugin/marketplace.json`): Lists all plugins with `name`, `description`, `version`, `source` paths
+2. **Plugin manifests** (each plugin's `.claude-plugin/plugin.json`): Defines metadata; `name` is required (kebab-case)
 
-2. **Plugin manifests** (each plugin's `.claude-plugin/plugin.json`):
-   - Defines individual plugin metadata
-   - Required field: `name` (kebab-case)
-   - Optional: `version`, `description`, `author`, `license`, `keywords`
+### Plugin Types
 
-### Plugin Components
-
-- **Commands** (`commands/*.md`): Markdown files with YAML frontmatter. The `description` in frontmatter becomes the command help text. Filename (minus .md) becomes the slash command name.
-- **Agents** (`agents/*.md`): Specialized subagents Claude can invoke
+- **Commands** (`commands/*.md`): Markdown with YAML frontmatter; filename becomes slash command
+- **Hooks** (`hooks/hooks.json`): Event-driven automation (PreToolUse, etc.)
+- **Agents** (`agents/*.md`): Subagent definitions
 - **Skills** (`skills/*/SKILL.md`): Model-invoked capabilities
-- **Hooks** (`hooks/hooks.json`): Event-driven automation
-- **MCP Servers** (`.mcp.json`): External tool integrations
+
+### Constraint
+
+All paths in manifests must be relative and start with `./`. Plugin names must be kebab-case.
+
+## Safety Hooks Plugin Architecture
+
+The safety-hooks plugin (`plugins/safety-hooks/`) is the main plugin. It implements a **unified hook dispatcher pattern**:
+
+### Entry Points
+
+| Hook File | Purpose |
+|-----------|---------|
+| `hooks/bash_hook.py` | Unified dispatcher for all Bash command checks |
+| `hooks/file_length_limit_hook.py` | Direct hook for Edit/Write operations |
+
+### Hook Output Formats
+
+Two formats exist—tests handle both:
+
+- **Flat**: `{"decision": "block"}`
+- **Nested**: `{"hookSpecificOutput": {"permissionDecision": "deny", "permissionDecisionReason": "..."}}`
+
+### Configuration System
+
+Config files merge in priority: **defaults → global → project**
+
+- Global: `~/.claude/plugins/safety-hooks-config.yaml`
+- Project: `.claude/plugins/safety-hooks-config.yaml`
+
+Python modules (`config.py`):
+- `SafetyHooksConfig` dataclass defines all settings
+- `load_config()` reads and merges YAML files
+- `get_config()` returns cached config singleton
+
+### Hook Check Functions
+
+Each individual hook module exports a `check_*_command(command, cwd=None)` function that returns `(decision, reason)` where `decision` is `"block"`, `"ask"`, or `"allow"`.
+
+The `bash_hook.py` dispatcher:
+1. Imports all check functions
+2. Runs each check sequentially
+3. Combines results: block > ask > allow (priority order)
+4. Outputs nested JSON format for deny/ask decisions
+
+## Development Commands
+
+### Linting & Formatting
+
+```bash
+# Lint Python (excludes test files)
+ruff check plugins/
+
+# Format Python
+ruff format plugins/
+
+# Run all pre-commit hooks
+pre-commit run --all-files
+
+# Skip pre-commit for a commit
+git commit --no-verify -m "message"
+```
+
+### Testing Safety Hooks
+
+```bash
+# Run all tests (53 tests, pure bash)
+cd plugins/safety-hooks && bash tests/run_all_tests.sh
+
+# Run individual test file
+bash tests/test_rm_block.sh  # Includes gitignore auto-add tests
+```
+
+**Test framework**: `tests/test_helpers.sh` provides bash testing helpers. No pytest, no bats, no jq dependency.
+
+### Local Plugin Testing
+
+```bash
+# Add marketplace from repo root
+claude
+/plugin marketplace add .
+
+# Install plugin
+/plugin install safety-hooks@ccplugins
+```
 
 ## Adding a New Plugin
 
 ```bash
-# 1. Create plugin directory
+# 1. Create directory structure
 mkdir -p plugins/new-plugin/.claude-plugin
 
 # 2. Create plugin manifest
@@ -57,34 +122,13 @@ cat > plugins/new-plugin/.claude-plugin/plugin.json << 'EOF'
 }
 EOF
 
-# 3. Add to marketplace manifest
-# Edit .claude-plugin/marketplace.json, append to plugins array:
-# {"name": "new-plugin", "source": "./plugins/new-plugin", ...}
+# 3. Add to .claude-plugin/marketplace.json plugins array
+# 4. Create README.md in plugin directory
 ```
 
-## Testing Plugins Locally
+## Python Style
 
-```bash
-# Add the marketplace (from repo root)
-claude
-/plugin marketplace add .
-
-# Install a plugin
-/plugin install plugin-name@ccplugins
-
-# Test commands
-/your-command
-```
-
-No build process, npm install, or compilation is required. Plugins are interpreted directly from source files.
-
-## Important Constraints
-
-- **All paths in manifests must be relative** and start with `./`
-- **Plugin names must be kebab-case** (lowercase, hyphens only)
-- **Commands are markdown files** - the content is a prompt that Claude executes
-- **No TypeScript/JavaScript compilation** - this is a declarative plugin system
-
-## Documentation
-
-See `MARKETPLACE.md` for contributor guidelines and plugin creation instructions.
+- Type hints required (Python 3.10+ style: `dict[str, int]`)
+- Dataclasses for configuration
+- Line length: 110 characters
+- Test files excluded from linting (pattern: `^plugins/.*/tests/.*$`)

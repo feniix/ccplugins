@@ -10,8 +10,10 @@ Configuration via .claude-plugin/safety-hooks-config.yaml:
 """
 
 import json
+import os
 import re
 import sys
+from pathlib import Path
 
 # Import config module for runtime configuration
 try:
@@ -28,7 +30,77 @@ except ImportError:
         return DefaultConfig()
 
 
-def check_rm_command(command):
+def ensure_gitignore_entries(cwd, trash_dir, log_file):
+    """
+    Add TRASH directory and log file to .gitignore at the repository root
+    if in a git repository and not already present. Silently does nothing
+    if not in a git repo.
+
+    The patterns TRASH/ and TRASH-FILES.md will match these files/directories
+    anywhere in the repository (recursive matching).
+    """
+    # Find the git repository root
+    repo_root = None
+    try:
+        current = Path(cwd).resolve()
+        for _ in range(50):  # Limit parent traversal to avoid infinite loops
+            if (current / ".git").exists():
+                repo_root = current
+                break
+            if current.parent == current:  # Reached filesystem root
+                break
+            current = current.parent
+    except (OSError, PermissionError):
+        pass  # Cannot determine git status
+
+    if not repo_root:
+        return  # Not in a git repo, nothing to do
+
+    gitignore_path = repo_root / ".gitignore"
+
+    # Read existing .gitignore if it exists
+    existing_entries = set()
+    if gitignore_path.exists():
+        try:
+            with open(gitignore_path, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        existing_entries.add(line)
+        except (OSError, PermissionError, UnicodeDecodeError):
+            return  # Cannot read .gitignore, skip
+
+    # Check if entries already exist (with or without trailing slash)
+    trash_variations = {trash_dir, f"{trash_dir}/"}
+
+    needs_trash = not any(v in existing_entries for v in trash_variations)
+    needs_log = log_file not in existing_entries
+
+    if not needs_trash and not needs_log:
+        return  # Already configured
+
+    # Append missing entries
+    try:
+        with open(gitignore_path, "a", encoding="utf-8") as f:
+            # Add newline if file doesn't end with one
+            if gitignore_path.exists() and gitignore_path.stat().st_size > 0:
+                f.seek(0, 2)  # Seek to end
+                if f.tell() > 0:
+                    f.seek(f.tell() - 1)
+                    last_char = f.read(1)
+                    if last_char not in ("\n", "\r"):
+                        f.write("\n")
+
+            f.write("\n# Safety-hooks: TRASH directory and log file (anywhere in repo)\n")
+            if needs_trash:
+                f.write(f"{trash_dir}/\n")
+            if needs_log:
+                f.write(f"{log_file}\n")
+    except (OSError, PermissionError):
+        pass  # Silently fail if we cannot write
+
+
+def check_rm_command(command, cwd=None):
     """
     Check if a command contains rm that should be blocked.
     Returns tuple: (should_block: bool, reason: str or None)
@@ -52,6 +124,10 @@ def check_rm_command(command):
     ):
         trash_dir = config.rm_trash_dir
         log_file = config.rm_log_file
+
+        # Ensure .gitignore entries if in a git repository
+        if cwd:
+            ensure_gitignore_entries(cwd, trash_dir, log_file)
 
         if config.rm_require_log:
             reason_text = (
@@ -87,10 +163,11 @@ if __name__ == "__main__":
         print(json.dumps({"decision": "approve"}))
         sys.exit(0)
 
-    # Get the command being executed
+    # Get the command being executed and current working directory
     command = data.get("tool_input", {}).get("command", "")
+    cwd = data.get("tool_input", {}).get("cwd") or os.getcwd()
 
-    should_block, reason = check_rm_command(command)
+    should_block, reason = check_rm_command(command, cwd)
 
     if should_block:
         print(json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False))
