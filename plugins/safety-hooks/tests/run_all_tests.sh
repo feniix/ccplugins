@@ -39,6 +39,7 @@ TEST_FILES=(
     "$SCRIPT_DIR/test_git_add.sh"
     "$SCRIPT_DIR/test_git_checkout.sh"
     "$SCRIPT_DIR/test_git_commit.sh"
+    "$SCRIPT_DIR/test_git_push_pull.sh"
     "$SCRIPT_DIR/test_env_protection.sh"
     "$SCRIPT_DIR/test_file_length.sh"
     "$SCRIPT_DIR/test_rm_block.sh"

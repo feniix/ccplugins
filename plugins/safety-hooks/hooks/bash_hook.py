@@ -25,6 +25,7 @@ from env_file_protection_hook import check_env_file_access
 from git_add_block_hook import check_git_add_command
 from git_checkout_safety_hook import check_git_checkout_command
 from git_commit_block_hook import check_git_commit_command
+from git_push_pull_ask_hook import check_git_push_pull_command
 from rm_block_hook import check_rm_command
 
 
@@ -59,6 +60,7 @@ def main():
         check_git_add_command,
         check_git_checkout_command,
         check_git_commit_command,
+        check_git_push_pull_command,
         check_env_file_access,
     ]
 

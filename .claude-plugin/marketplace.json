@@ -11,11 +11,23 @@
     {
       "name": "safety-hooks",
       "description": "Safety hooks to block or require user approval for dangerous commands (rm, git operations, .env access, file size limits)",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "source": "./plugins/safety-hooks",
       "category": "security",
-      "tags": ["safety", "hooks", "git", "security"],
-      "keywords": ["rm", "git", "env", "safety", "protection", "hooks"],
+      "tags": [
+        "safety",
+        "hooks",
+        "git",
+        "security"
+      ],
+      "keywords": [
+        "rm",
+        "git",
+        "env",
+        "safety",
+        "protection",
+        "hooks"
+      ],
       "author": {
         "name": "Sebastian Otaegui"
       }

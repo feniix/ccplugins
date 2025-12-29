@@ -22,6 +22,7 @@ class SafetyHooksConfig:
     git_add_block_enabled: bool = True
     git_checkout_block_enabled: bool = True
     git_commit_ask_enabled: bool = True
+    git_push_pull_ask_enabled: bool = True
     env_protection_enabled: bool = True
     file_length_limit_enabled: bool = True
 
@@ -168,6 +169,7 @@ def _apply_config_data(config: SafetyHooksConfig, data: dict[str, Any]) -> None:
             "git_checkout_block", config.git_checkout_block_enabled
         )
         config.git_commit_ask_enabled = enabled.get("git_commit_ask", config.git_commit_ask_enabled)
+        config.git_push_pull_ask_enabled = enabled.get("git_push_pull_ask", config.git_push_pull_ask_enabled)
         config.env_protection_enabled = enabled.get("env_protection", config.env_protection_enabled)
         config.file_length_limit_enabled = enabled.get("file_length_limit", config.file_length_limit_enabled)
 

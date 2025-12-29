@@ -20,17 +20,6 @@
         "ref-tools-mcp@latest"
       ]
     },
-    "basic-memory": {
-      "command": "uvx",
-      "args": [
-        "basic-memory",
-        "mcp",
-        "--project=ccplugins"
-      ],
-      "env": {
-        "BASIC_MEMORY_KEBAB_FILENAMES": "true"
-      }
-    },
     "serena": {
       "command": "uvx",
       "args": [
